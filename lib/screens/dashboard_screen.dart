@@ -110,14 +110,31 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               ),
                             ],
                           ),
+
+                          // 🔥 LEFT BUTTON (complete toggle)
+                          leading: IconButton(
+                            icon: Icon(
+                              habit.progress == 100
+                                  ? Icons.check_circle
+                                  : Icons.circle_outlined,
+                              color: habit.progress == 100
+                                  ? Colors.green
+                                  : Colors.grey,
+                            ),
+                            onPressed: () async {
+                              habit.progress = habit.progress == 100 ? 0 : 100;
+                              await DBHelper.instance.updateHabit(habit);
+                              loadHabits();
+                            },
+                          ),
+
                           trailing: Text("${habit.progress}%"),
 
                           onTap: () async {
                             final result = await Navigator.push(
                               context,
                               MaterialPageRoute(
-                                builder: (context) =>
-                                    HabitDetailsScreen(habit: habit),
+                                builder: (context) => HabitDetailsScreen(habit: habit),
                               ),
                             );
 
@@ -125,7 +142,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                               loadHabits();
                             }
                           },
-                        ),
+                        )
                       );
                     },
                   ),

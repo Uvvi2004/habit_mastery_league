@@ -26,7 +26,9 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
     });
 
     widget.habit.progress = value.toInt();
+
     await DBHelper.instance.updateHabit(widget.habit);
+
   }
 
   @override
@@ -34,6 +36,12 @@ class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Habit Details'),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back),
+          onPressed: () {
+            Navigator.pop(context, true); // 🔥 THIS FIXES DASHBOARD UPDATE
+          },
+        ),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16),
