@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../database/db_helper.dart';
 import '../models/habit.dart';
+import 'add_habit_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -31,6 +32,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       appBar: AppBar(
         title: const Text('Dashboard'),
       ),
+
       body: habits.isEmpty
           ? const Center(child: Text('No habits yet'))
           : ListView.builder(
@@ -52,6 +54,22 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 );
               },
             ),
+
+      floatingActionButton: FloatingActionButton(
+        onPressed: () async {
+          final result = await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const AddHabitScreen(),
+            ),
+          );
+
+          if (result == true) {
+            loadHabits();
+          }
+        },
+        child: const Icon(Icons.add),
+      ),
     );
   }
 }
