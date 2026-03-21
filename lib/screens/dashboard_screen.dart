@@ -45,8 +45,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
-            onPressed: () {
-              Navigator.push(
+            onPressed: () async {
+              final result = await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => SettingsScreen(
@@ -56,6 +56,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
               );
+
+              loadHabits(); // 🔥 THIS IS THE IMPORTANT LINE
             },
           ),
         ],

@@ -70,5 +70,10 @@ class DBHelper {
       whereArgs: [id],
     );
   }
+
+  Future<int> deleteAllHabits() async {
+  final db = await DBHelper.instance.database;
+  return await db.delete('habits');
+  }
 }
 
