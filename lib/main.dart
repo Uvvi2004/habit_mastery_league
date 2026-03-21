@@ -9,7 +9,7 @@ void main() {
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
-  static _MyAppState? of(BuildContext context) {
+  static dynamic of(BuildContext context) {
     return context.findAncestorStateOfType<_MyAppState>();
   }
 
