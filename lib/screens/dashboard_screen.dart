@@ -46,7 +46,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           IconButton(
             icon: const Icon(Icons.settings),
             onPressed: () async {
-              final result = await Navigator.push(
+              await Navigator.push(
                 context,
                 MaterialPageRoute(
                   builder: (context) => SettingsScreen(
@@ -56,8 +56,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
               );
-
-              loadHabits(); 
+              loadHabits(); // refresh after settings
             },
           ),
         ],
@@ -65,17 +64,33 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
       body: Column(
         children: [
+          // TOP PROGRESS SECTION
           Padding(
-            padding: const EdgeInsets.all(12),
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                LinearProgressIndicator(value: percent),
-                const SizedBox(height: 5),
-                Text("Overall Progress: ${(percent * 100).toInt()}%"),
+                const Text(
+                  "Overall Progress",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 6),
+                ClipRRect(
+                  borderRadius: BorderRadius.circular(10),
+                  child: LinearProgressIndicator(
+                    value: percent,
+                    minHeight: 10,
+                    color: const Color.fromARGB(255, 116, 221, 113),
+                    backgroundColor: Colors.grey[300],
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text("${(percent * 100).toInt()}%"),
               ],
             ),
           ),
 
+          // HABIT LIST
           Expanded(
             child: habits.isEmpty
                 ? const Center(
@@ -90,61 +105,111 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     itemBuilder: (context, index) {
                       final habit = habits[index];
 
-                      return Card(
-                        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                        child: ListTile(
-                          title: Text(
-                            habit.name,
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              decoration: habit.progress == 100
-                                  ? TextDecoration.lineThrough
-                                  : null,
+                      return GestureDetector(
+                        onTap: () async {
+                          final result = await Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) =>
+                                  HabitDetailsScreen(habit: habit),
+                            ),
+                          );
+
+                          if (result == true) {
+                            loadHabits();
+                          }
+                        },
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(
+                              horizontal: 12, vertical: 6),
+                          child: Container(
+                            decoration: BoxDecoration(
+                              color: Theme.of(context).cardColor,
+                              borderRadius: BorderRadius.circular(16),
+                              boxShadow: [
+                                BoxShadow(
+                                  color: Colors.black.withOpacity(0.05),
+                                  blurRadius: 8,
+                                  offset: const Offset(0, 4),
+                                ),
+                              ],
+                            ),
+                            child: Padding(
+                              padding: const EdgeInsets.all(14),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  // TOP ROW
+                                  Row(
+                                    children: [
+                                      IconButton(
+                                        icon: Icon(
+                                          habit.progress == 100
+                                              ? Icons.check_circle
+                                              : Icons.circle_outlined,
+                                          color: habit.progress == 100
+                                              ? const Color.fromARGB(255, 116, 221, 113)
+                                              : Colors.grey,
+                                        ),
+                                        onPressed: () async {
+                                          habit.progress =
+                                              habit.progress == 100 ? 0 : 100;
+                                          await DBHelper.instance
+                                              .updateHabit(habit);
+                                          loadHabits();
+                                        },
+                                      ),
+
+                                      const SizedBox(width: 5),
+
+                                      Expanded(
+                                        child: Text(
+                                          habit.name,
+                                          style: TextStyle(
+                                            fontSize: 18,
+                                            fontWeight: FontWeight.w600,
+                                            decoration:
+                                                habit.progress == 100
+                                                    ? TextDecoration.lineThrough
+                                                    : null,
+                                          ),
+                                        ),
+                                      ),
+
+                                      Text(
+                                        "${habit.progress}%",
+                                        style: const TextStyle(
+                                          fontWeight: FontWeight.bold,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+
+                                  const SizedBox(height: 6),
+
+                                  Text(
+                                    habit.description,
+                                    style: TextStyle(
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+
+                                  const SizedBox(height: 10),
+
+                                  ClipRRect(
+                                    borderRadius: BorderRadius.circular(10),
+                                    child: LinearProgressIndicator(
+                                      value: habit.progress / 100,
+                                      minHeight: 8,
+                                      color: const Color.fromARGB(255, 116, 221, 113),
+                                      backgroundColor: const Color.fromARGB(255, 255, 255, 255),
+                                    ),
+                                  ),
+                                ],
+                              ),
                             ),
                           ),
-                          subtitle: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(habit.description),
-                              const SizedBox(height: 5),
-                              LinearProgressIndicator(
-                                value: habit.progress / 100,
-                              ),
-                            ],
-                          ),
-
-                          // 🔥 LEFT BUTTON (complete toggle)
-                          leading: IconButton(
-                            icon: Icon(
-                              habit.progress == 100
-                                  ? Icons.check_circle
-                                  : Icons.circle_outlined,
-                              color: habit.progress == 100
-                                  ? Colors.green
-                                  : Colors.grey,
-                            ),
-                            onPressed: () async {
-                              habit.progress = habit.progress == 100 ? 0 : 100;
-                              await DBHelper.instance.updateHabit(habit);
-                              loadHabits();
-                            },
-                          ),
-
-                          trailing: Text("${habit.progress}%"),
-
-                          onTap: () async {
-                            final result = await Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => HabitDetailsScreen(habit: habit),
-                              ),
-                            );
-
-                            if (result == true) {
-                              loadHabits();
-                            }
-                          },
-                        )
+                        ),
                       );
                     },
                   ),
@@ -153,7 +218,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
 
       floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.black,
+        backgroundColor: const Color.fromARGB(255, 0, 0, 0),
         foregroundColor: Colors.white,
         onPressed: () async {
           final result = await Navigator.push(
