@@ -3,6 +3,7 @@ import '../database/db_helper.dart';
 import '../models/habit.dart';
 import 'add_habit_screen.dart';
 import 'settings_screen.dart';
+import 'habit_details_screen.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -97,6 +98,18 @@ class _DashboardScreenState extends State<DashboardScreen> {
                         loadHabits();
                       },
                     ),
+                    onTap: () async {
+                      final result = await Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => HabitDetailsScreen(habit: habit),
+                        ),
+                      );
+
+                      if (result == true) {
+                        loadHabits();
+                      }
+                    },
                   ),
                 );
               },
