@@ -48,38 +48,55 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
 
       body: habits.isEmpty
-          ? const Center(child: Text('No habits yet'))
+          ? const Center(
+              child: Text(
+                'No habits yet\nTap + to add one',
+                textAlign: TextAlign.center,
+                style: TextStyle(fontSize: 18),
+              ),
+            )
           : ListView.builder(
               itemCount: habits.length,
               itemBuilder: (context, index) {
                 final habit = habits[index];
 
-                return ListTile(
-                  title: Text(habit.name),
-                  subtitle: Text(habit.description),
-
-                  leading: IconButton(
-                    icon: Icon(
-                      habit.isCompleted == 1
-                          ? Icons.check_circle
-                          : Icons.circle_outlined,
-                      color: habit.isCompleted == 1
-                          ? Colors.green
-                          : Colors.grey,
+                return Card(
+                  margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                  child: ListTile(
+                    title: Text(
+                      habit.name,
+                      style: TextStyle(
+                        fontWeight: FontWeight.bold,
+                        decoration: habit.isCompleted == 1
+                            ? TextDecoration.lineThrough
+                            : null,
+                      ),
                     ),
-                    onPressed: () async {
-                      habit.isCompleted = habit.isCompleted == 1 ? 0 : 1;
-                      await DBHelper.instance.updateHabit(habit);
-                      loadHabits();
-                    },
-                  ),
+                    subtitle: Text(habit.description),
 
-                  trailing: IconButton(
-                    icon: const Icon(Icons.delete, color: Colors.red),
-                    onPressed: () async {
-                      await DBHelper.instance.deleteHabit(habit.id!);
-                      loadHabits();
-                    },
+                    leading: IconButton(
+                      icon: Icon(
+                        habit.isCompleted == 1
+                            ? Icons.check_circle
+                            : Icons.circle_outlined,
+                        color: habit.isCompleted == 1
+                            ? Colors.green
+                            : Colors.grey,
+                      ),
+                      onPressed: () async {
+                        habit.isCompleted = habit.isCompleted == 1 ? 0 : 1;
+                        await DBHelper.instance.updateHabit(habit);
+                        loadHabits();
+                      },
+                    ),
+
+                    trailing: IconButton(
+                      icon: const Icon(Icons.delete, color: Colors.red),
+                      onPressed: () async {
+                        await DBHelper.instance.deleteHabit(habit.id!);
+                        loadHabits();
+                      },
+                    ),
                   ),
                 );
               },
