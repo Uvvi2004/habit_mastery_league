@@ -43,13 +43,29 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 return ListTile(
                   title: Text(habit.name),
                   subtitle: Text(habit.description),
-                  trailing: Icon(
-                    habit.isCompleted == 1
-                        ? Icons.check_circle
-                        : Icons.circle_outlined,
-                    color: habit.isCompleted == 1
-                        ? Colors.green
-                        : Colors.grey,
+
+                  leading: IconButton(
+                    icon: Icon(
+                      habit.isCompleted == 1
+                          ? Icons.check_circle
+                          : Icons.circle_outlined,
+                      color: habit.isCompleted == 1
+                          ? Colors.green
+                          : Colors.grey,
+                    ),
+                    onPressed: () async {
+                      habit.isCompleted = habit.isCompleted == 1 ? 0 : 1;
+                      await DBHelper.instance.updateHabit(habit);
+                      loadHabits();
+                    },
+                  ),
+
+                  trailing: IconButton(
+                    icon: const Icon(Icons.delete, color: Colors.red),
+                    onPressed: () async {
+                      await DBHelper.instance.deleteHabit(habit.id!);
+                      loadHabits();
+                    },
                   ),
                 );
               },
