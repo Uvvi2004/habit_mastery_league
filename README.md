@@ -1,16 +1,33 @@
-# habit_mastery_league
+# Habit Mastery League
 
-A new Flutter project.
+## Overview
+Habit Mastery League is a Flutter mobile app that helps users track and manage their daily habits with progress tracking and personalized settings.
 
-## Getting Started
+## Features
+- Add new habits
+- Delete habits
+- Update habit progress using a slider
+- Mark habits as complete
+- View overall progress percentage
+- Splash screen with user name and logo
+- Persistent user name storage
+- Dark mode toggle
+- Delete all habits option
 
-This project is a starting point for a Flutter application.
+## Technologies Used
+- Flutter (Dart)
+- SQLite (sqflite)
+- SharedPreferences
 
-A few resources to get you started if this is your first Flutter project:
+## How to Run
+1. Clone the repository
+2. Run `flutter pub get`
+3. Run `flutter run`
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Project Structure
+- screens/ → UI screens
+- models/ → data models
+- database/ → SQLite logic
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+## Author
+Uddhav Cota
