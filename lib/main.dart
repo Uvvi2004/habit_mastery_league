@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'screens/dashboard_screen.dart';
 
 void main() {
   runApp(const MyApp());
@@ -9,14 +10,9 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
+    return const MaterialApp(
       title: 'Habit Mastery League',
-      home: Scaffold(
-        appBar: AppBar(title: const Text('Habit Mastery League')),
-        body: const Center(
-          child: Text('App Started'),
-        ),
-      ),
+      home: DashboardScreen(),
     );
   }
 }
