@@ -57,7 +57,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                 ),
               );
 
-              loadHabits(); // 🔥 THIS IS THE IMPORTANT LINE
+              loadHabits(); 
             },
           ),
         ],
@@ -153,6 +153,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
       ),
 
       floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.black,
+        foregroundColor: Colors.white,
         onPressed: () async {
           final result = await Navigator.push(
             context,

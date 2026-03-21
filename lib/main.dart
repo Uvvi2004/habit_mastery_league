@@ -49,6 +49,27 @@ class _MyAppState extends State<MyApp> {
       title: 'Habit Mastery League',
       theme: ThemeData(
         brightness: isDarkMode ? Brightness.dark : Brightness.light,
+        
+        scaffoldBackgroundColor:
+            isDarkMode ? null : Colors.white,
+
+        appBarTheme: AppBarTheme(
+          backgroundColor:
+              isDarkMode ? null : Colors.white,
+          foregroundColor:
+              isDarkMode ? null : Colors.black,
+          elevation: 0,
+        ),
+
+        colorScheme: ColorScheme.fromSeed(
+          seedColor: Colors.blue,
+          brightness:
+              isDarkMode ? Brightness.dark : Brightness.light,
+        ).copyWith(
+          primary: isDarkMode ? null : Colors.black,
+          onPrimary: isDarkMode ? null : Colors.white,
+        ),
+
         useMaterial3: true,
       ),
       home: const SplashScreen(),
