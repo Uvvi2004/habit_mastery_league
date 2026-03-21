@@ -2,10 +2,32 @@ import 'package:flutter/material.dart';
 import '../models/habit.dart';
 import '../database/db_helper.dart';
 
-class HabitDetailsScreen extends StatelessWidget {
+class HabitDetailsScreen extends StatefulWidget {
   final Habit habit;
 
   const HabitDetailsScreen({super.key, required this.habit});
+
+  @override
+  State<HabitDetailsScreen> createState() => _HabitDetailsScreenState();
+}
+
+class _HabitDetailsScreenState extends State<HabitDetailsScreen> {
+  late double progress;
+
+  @override
+  void initState() {
+    super.initState();
+    progress = widget.habit.progress.toDouble();
+  }
+
+  void updateProgress(double value) async {
+    setState(() {
+      progress = value;
+    });
+
+    widget.habit.progress = value.toInt();
+    await DBHelper.instance.updateHabit(widget.habit);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -19,33 +41,28 @@ class HabitDetailsScreen extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              habit.name,
+              widget.habit.name,
               style: const TextStyle(fontSize: 22, fontWeight: FontWeight.bold),
             ),
             const SizedBox(height: 10),
-            Text(habit.description),
-
-            const SizedBox(height: 20),
-
-            Row(
-              children: [
-                const Text("Completed: "),
-                Icon(
-                  habit.isCompleted == 1
-                      ? Icons.check_circle
-                      : Icons.circle_outlined,
-                  color: habit.isCompleted == 1
-                      ? Colors.green
-                      : Colors.grey,
-                ),
-              ],
-            ),
+            Text(widget.habit.description),
 
             const SizedBox(height: 30),
 
+            Text("Progress: ${progress.toInt()}%"),
+            Slider(
+              value: progress,
+              min: 0,
+              max: 100,
+              divisions: 100,
+              onChanged: updateProgress,
+            ),
+
+            const SizedBox(height: 20),
+
             ElevatedButton(
               onPressed: () async {
-                await DBHelper.instance.deleteHabit(habit.id!);
+                await DBHelper.instance.deleteHabit(widget.habit.id!);
                 Navigator.pop(context, true);
               },
               child: const Text('Delete Habit'),

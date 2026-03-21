@@ -31,7 +31,7 @@ class DBHelper {
         id INTEGER PRIMARY KEY AUTOINCREMENT,
         name TEXT,
         description TEXT,
-        isCompleted INTEGER
+        progress INTEGER
       )
     ''');
   }

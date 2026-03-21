@@ -29,8 +29,16 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
+  double getCompletionPercent() {
+    if (habits.isEmpty) return 0;
+    double total = habits.fold(0, (sum, h) => sum + h.progress);
+    return total / (habits.length * 100);
+  }
+
   @override
   Widget build(BuildContext context) {
+    double percent = getCompletionPercent();
+
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
@@ -53,72 +61,77 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ],
       ),
 
-      body: habits.isEmpty
-          ? const Center(
-              child: Text(
-                'No habits yet\nTap + to add one',
-                textAlign: TextAlign.center,
-                style: TextStyle(fontSize: 18),
-              ),
-            )
-          : ListView.builder(
-              itemCount: habits.length,
-              itemBuilder: (context, index) {
-                final habit = habits[index];
+      body: Column(
+        children: [
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: Column(
+              children: [
+                LinearProgressIndicator(value: percent),
+                const SizedBox(height: 5),
+                Text("Overall Progress: ${(percent * 100).toInt()}%"),
+              ],
+            ),
+          ),
 
-                return Card(
-                  margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
-                  child: ListTile(
-                    title: Text(
-                      habit.name,
-                      style: TextStyle(
-                        fontWeight: FontWeight.bold,
-                        decoration: habit.isCompleted == 1
-                            ? TextDecoration.lineThrough
-                            : null,
-                      ),
+          Expanded(
+            child: habits.isEmpty
+                ? const Center(
+                    child: Text(
+                      'No habits yet\nTap + to add one',
+                      textAlign: TextAlign.center,
+                      style: TextStyle(fontSize: 18),
                     ),
-                    subtitle: Text(habit.description),
+                  )
+                : ListView.builder(
+                    itemCount: habits.length,
+                    itemBuilder: (context, index) {
+                      final habit = habits[index];
 
-                    leading: IconButton(
-                      icon: Icon(
-                        habit.isCompleted == 1
-                            ? Icons.check_circle
-                            : Icons.circle_outlined,
-                        color: habit.isCompleted == 1
-                            ? Colors.green
-                            : Colors.grey,
-                      ),
-                      onPressed: () async {
-                        habit.isCompleted = habit.isCompleted == 1 ? 0 : 1;
-                        await DBHelper.instance.updateHabit(habit);
-                        loadHabits();
-                      },
-                    ),
+                      return Card(
+                        margin: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        child: ListTile(
+                          title: Text(
+                            habit.name,
+                            style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              decoration: habit.progress == 100
+                                  ? TextDecoration.lineThrough
+                                  : null,
+                            ),
+                          ),
+                          subtitle: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(habit.description),
+                              const SizedBox(height: 5),
+                              LinearProgressIndicator(
+                                value: habit.progress / 100,
+                              ),
+                            ],
+                          ),
+                          trailing: Text("${habit.progress}%"),
 
-                    trailing: IconButton(
-                      icon: const Icon(Icons.delete, color: Colors.red),
-                      onPressed: () async {
-                        await DBHelper.instance.deleteHabit(habit.id!);
-                        loadHabits();
-                      },
-                    ),
-                    onTap: () async {
-                      final result = await Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (context) => HabitDetailsScreen(habit: habit),
+                          onTap: () async {
+                            final result = await Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (context) =>
+                                    HabitDetailsScreen(habit: habit),
+                              ),
+                            );
+
+                            if (result == true) {
+                              loadHabits();
+                            }
+                          },
                         ),
                       );
-
-                      if (result == true) {
-                        loadHabits();
-                      }
                     },
                   ),
-                );
-              },
-            ),
+          ),
+        ],
+      ),
 
       floatingActionButton: FloatingActionButton(
         onPressed: () async {
