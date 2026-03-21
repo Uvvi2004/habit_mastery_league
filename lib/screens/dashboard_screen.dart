@@ -4,6 +4,7 @@ import '../models/habit.dart';
 import 'add_habit_screen.dart';
 import 'settings_screen.dart';
 import 'habit_details_screen.dart';
+import '../main.dart';
 
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
@@ -40,7 +41,11 @@ class _DashboardScreenState extends State<DashboardScreen> {
               Navigator.push(
                 context,
                 MaterialPageRoute(
-                  builder: (context) => const SettingsScreen(),
+                  builder: (context) => SettingsScreen(
+                    onThemeChanged: (value) {
+                      MyApp.of(context)?.setTheme(value);
+                    },
+                  ),
                 ),
               );
             },
