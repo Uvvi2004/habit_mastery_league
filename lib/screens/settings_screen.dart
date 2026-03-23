@@ -2,8 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../database/db_helper.dart';
 
+// This screen allows users to manage app settings
+// Includes dark mode toggle, name update, and delete all habits
 class SettingsScreen extends StatefulWidget {
-  final Function(bool) onThemeChanged;
+  final Function(bool) onThemeChanged; // Callback to update app theme
 
   const SettingsScreen({super.key, required this.onThemeChanged});
 
@@ -12,16 +14,17 @@ class SettingsScreen extends StatefulWidget {
 }
 
 class _SettingsScreenState extends State<SettingsScreen> {
-  bool isDarkMode = false;
-  String name = "";
+  bool isDarkMode = false; // Stores current theme state
+  String name = ""; // Stores current username
   final TextEditingController nameController = TextEditingController();
 
   @override
   void initState() {
     super.initState();
-    loadSettings();
+    loadSettings(); // Load saved settings when screen starts
   }
 
+  // Load saved data from SharedPreferences
   Future<void> loadSettings() async {
     final prefs = await SharedPreferences.getInstance();
 
@@ -32,6 +35,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
     });
   }
 
+  // Toggle dark mode and save preference
   Future<void> toggleTheme(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('darkMode', value);
@@ -40,9 +44,11 @@ class _SettingsScreenState extends State<SettingsScreen> {
       isDarkMode = value;
     });
 
+    // Notify main app to update theme
     widget.onThemeChanged(value);
   }
 
+  // Save updated username
   Future<void> saveName() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('username', nameController.text);
@@ -51,14 +57,17 @@ class _SettingsScreenState extends State<SettingsScreen> {
       name = nameController.text;
     });
 
+    // Show confirmation message
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('Name updated')),
     );
   }
 
+  // Delete all habits from database
   Future<void> deleteAllHabits() async {
     await DBHelper.instance.deleteAllHabits();
 
+    // Show confirmation message
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(content: Text('All habits deleted')),
     );
@@ -70,11 +79,14 @@ class _SettingsScreenState extends State<SettingsScreen> {
       appBar: AppBar(
         title: const Text('Settings'),
       ),
+
       body: Padding(
         padding: const EdgeInsets.all(16),
+
         child: Column(
           children: [
 
+            // Dark mode toggle switch
             ListTile(
               title: const Text('Dark Mode'),
               trailing: Switch(
@@ -85,6 +97,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             const SizedBox(height: 20),
 
+            // Input field to change username
             TextField(
               controller: nameController,
               decoration: const InputDecoration(
@@ -95,6 +108,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             const SizedBox(height: 10),
 
+            // Button to save new name
             ElevatedButton(
               onPressed: saveName,
               child: const Text("Save Name"),
@@ -102,6 +116,7 @@ class _SettingsScreenState extends State<SettingsScreen> {
 
             const SizedBox(height: 30),
 
+            // Button to delete all habits
             ElevatedButton(
               onPressed: deleteAllHabits,
               style: ElevatedButton.styleFrom(

@@ -6,6 +6,7 @@ import 'settings_screen.dart';
 import 'habit_details_screen.dart';
 import '../main.dart';
 
+// This is the main screen that shows all habits
 class DashboardScreen extends StatefulWidget {
   const DashboardScreen({super.key});
 
@@ -14,14 +15,15 @@ class DashboardScreen extends StatefulWidget {
 }
 
 class _DashboardScreenState extends State<DashboardScreen> {
-  List<Habit> habits = [];
+  List<Habit> habits = []; // Stores all habits from database
 
   @override
   void initState() {
     super.initState();
-    loadHabits();
+    loadHabits(); // Load habits when screen starts
   }
 
+  // Fetch habits from database and update UI
   Future<void> loadHabits() async {
     final data = await DBHelper.instance.getHabits();
     setState(() {
@@ -29,6 +31,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
     });
   }
 
+  // Calculate overall completion percentage
   double getCompletionPercent() {
     if (habits.isEmpty) return 0;
     double total = habits.fold(0, (sum, h) => sum + h.progress);
@@ -42,6 +45,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
     return Scaffold(
       appBar: AppBar(
         title: const Text('Dashboard'),
+
+        // Settings button
         actions: [
           IconButton(
             icon: const Icon(Icons.settings),
@@ -56,7 +61,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   ),
                 ),
               );
-              loadHabits(); // refresh after settings
+              loadHabits(); // Refresh after returning from settings
             },
           ),
         ],
@@ -64,7 +69,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
       body: Column(
         children: [
-          // TOP PROGRESS SECTION
+
+          // TOP PROGRESS SECTION (overall progress)
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 10),
             child: Column(
@@ -75,6 +81,8 @@ class _DashboardScreenState extends State<DashboardScreen> {
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
                 ),
                 const SizedBox(height: 6),
+
+                // Overall progress bar
                 ClipRRect(
                   borderRadius: BorderRadius.circular(10),
                   child: LinearProgressIndicator(
@@ -84,7 +92,10 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     backgroundColor: Colors.grey[300],
                   ),
                 ),
+
                 const SizedBox(height: 6),
+
+                // Percentage text
                 Text("${(percent * 100).toInt()}%"),
               ],
             ),
@@ -105,6 +116,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                     itemBuilder: (context, index) {
                       final habit = habits[index];
 
+                      // Each habit card is clickable
                       return GestureDetector(
                         onTap: () async {
                           final result = await Navigator.push(
@@ -116,12 +128,15 @@ class _DashboardScreenState extends State<DashboardScreen> {
                           );
 
                           if (result == true) {
-                            loadHabits();
+                            loadHabits(); // Refresh after editing
                           }
                         },
+
                         child: Padding(
                           padding: const EdgeInsets.symmetric(
                               horizontal: 12, vertical: 6),
+
+                          // Card UI for each habit
                           child: Container(
                             decoration: BoxDecoration(
                               color: Theme.of(context).cardColor,
@@ -134,14 +149,19 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                 ),
                               ],
                             ),
+
                             child: Padding(
                               padding: const EdgeInsets.all(14),
+
                               child: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
-                                  // TOP ROW
+
+                                  // TOP ROW (icon + name + percent)
                                   Row(
                                     children: [
+
+                                      // Complete toggle button
                                       IconButton(
                                         icon: Icon(
                                           habit.progress == 100
@@ -152,16 +172,20 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                               : Colors.grey,
                                         ),
                                         onPressed: () async {
+                                          // Toggle between 0% and 100%
                                           habit.progress =
                                               habit.progress == 100 ? 0 : 100;
+
                                           await DBHelper.instance
                                               .updateHabit(habit);
+
                                           loadHabits();
                                         },
                                       ),
 
                                       const SizedBox(width: 5),
 
+                                      // Habit name
                                       Expanded(
                                         child: Text(
                                           habit.name,
@@ -176,6 +200,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
                                         ),
                                       ),
 
+                                      // Progress percentage
                                       Text(
                                         "${habit.progress}%",
                                         style: const TextStyle(
@@ -187,6 +212,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                                   const SizedBox(height: 6),
 
+                                  // Habit description
                                   Text(
                                     habit.description,
                                     style: TextStyle(
@@ -196,6 +222,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
 
                                   const SizedBox(height: 10),
 
+                                  // Individual habit progress bar
                                   ClipRRect(
                                     borderRadius: BorderRadius.circular(10),
                                     child: LinearProgressIndicator(
@@ -217,6 +244,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
         ],
       ),
 
+      // Button to add new habit
       floatingActionButton: FloatingActionButton(
         backgroundColor: const Color.fromARGB(255, 0, 0, 0),
         foregroundColor: Colors.white,
@@ -229,7 +257,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
           );
 
           if (result == true) {
-            loadHabits();
+            loadHabits(); // Refresh after adding
           }
         },
         child: const Icon(Icons.add),

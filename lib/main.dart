@@ -2,13 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import 'screens/splash_screen.dart';
 
+// Entry point of the app
 void main() {
   runApp(const MyApp());
 }
 
+// Root widget of the application
 class MyApp extends StatefulWidget {
   const MyApp({super.key});
 
+  // This method allows other screens (like Settings) to access and update theme
   static dynamic of(BuildContext context) {
     return context.findAncestorStateOfType<_MyAppState>();
   }
@@ -18,14 +21,15 @@ class MyApp extends StatefulWidget {
 }
 
 class _MyAppState extends State<MyApp> {
-  bool isDarkMode = false;
+  bool isDarkMode = false; // Stores current theme mode
 
   @override
   void initState() {
     super.initState();
-    loadTheme();
+    loadTheme(); // Load saved theme when app starts
   }
 
+  // Load theme preference from SharedPreferences
   void loadTheme() async {
     final prefs = await SharedPreferences.getInstance();
     setState(() {
@@ -33,6 +37,7 @@ class _MyAppState extends State<MyApp> {
     });
   }
 
+  // Update theme and save preference
   void setTheme(bool value) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setBool('darkMode', value);
@@ -46,12 +51,16 @@ class _MyAppState extends State<MyApp> {
   Widget build(BuildContext context) {
     return MaterialApp(
       title: 'Habit Mastery League',
+
+      // Theme configuration
       theme: ThemeData(
         brightness: isDarkMode ? Brightness.dark : Brightness.light,
-        
+
+        // Light mode background
         scaffoldBackgroundColor:
             isDarkMode ? null : Colors.white,
 
+        // AppBar styling
         appBarTheme: AppBarTheme(
           backgroundColor:
               isDarkMode ? null : Colors.white,
@@ -60,6 +69,7 @@ class _MyAppState extends State<MyApp> {
           elevation: 0,
         ),
 
+        // Color scheme setup
         colorScheme: ColorScheme.fromSeed(
           seedColor: Colors.blue,
           brightness:
@@ -71,6 +81,8 @@ class _MyAppState extends State<MyApp> {
 
         useMaterial3: true,
       ),
+
+      // First screen shown when app starts
       home: const SplashScreen(),
     );
   }
